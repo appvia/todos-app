@@ -18,7 +18,7 @@ docker run --name todos-app \
   -e DB_NAME=${POSTGRESQL_DB_NAME} \
   -e DB_USERNAME=${POSTGRESQL_DB_USERNAME} \
   -e DB_PASSWORD=${POSTGRESQL_DB_PASSWORD} \
-  -d todos-app:${VERSION}
+  -d ghcr.io/appvia/todos-app:latest@sha256:db27ed795c13856f9f779f76c469f561385dd4419399fe48f8acd09f6f199ab8
 ```
 
 <!-- ## Run the Docker container in a Kubernetes cluster

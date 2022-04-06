@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
@@ -9,6 +10,16 @@ import (
 	"log"
 	"os"
 )
+
+type todo struct {
+	Item string
+}
+
+type TfOutput struct {
+	Sensitive bool
+	Type      string
+	Value     string
+}
 
 func indexHandler(c *fiber.Ctx, db *sql.DB) error {
 	var res string
@@ -26,10 +37,6 @@ func indexHandler(c *fiber.Ctx, db *sql.DB) error {
 	return c.Render("index", fiber.Map{
 		"Todos": todos,
 	})
-}
-
-type todo struct {
-	Item string
 }
 
 func postHandler(c *fiber.Ctx, db *sql.DB) error {
@@ -61,11 +68,50 @@ func deleteHandler(c *fiber.Ctx, db *sql.DB) error {
 	return c.SendString("deleted")
 }
 
+func isJSON(s string) bool {
+	var js map[string]interface{}
+	return json.Unmarshal([]byte(s), &js) == nil
+}
+
 func main() {
-	dbHost := os.Getenv("DB_HOST")
-	dbName := os.Getenv("DB_NAME")
-	dbUsername := os.Getenv("DB_USERNAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
+	var host TfOutput
+	var name TfOutput
+	var username TfOutput
+	var password TfOutput
+
+	var dbHost string
+	var dbName string
+	var dbUsername string
+	var dbPassword string
+
+	if isJSON(os.Getenv("DB_HOST")) {
+		json.Unmarshal([]byte(os.Getenv("DB_HOST")), &host)
+		dbHost = host.Value
+	} else {
+		dbHost = os.Getenv("DB_HOST")
+	}
+
+	if isJSON(os.Getenv("DB_NAME")) {
+		json.Unmarshal([]byte(os.Getenv("DB_NAME")), &name)
+		dbName = name.Value
+	} else {
+		dbName = os.Getenv("DB_NAME")
+	}
+
+	if isJSON(os.Getenv("DB_USERNAME")) {
+		json.Unmarshal([]byte(os.Getenv("DB_USERNAME")), &username)
+		dbUsername = username.Value
+	} else {
+		dbUsername = os.Getenv("DB_USERNAME")
+	}
+
+	if isJSON(os.Getenv("DB_PASSWORD")) {
+		json.Unmarshal([]byte(os.Getenv("DB_PASSWORD")), &password)
+		dbPassword = password.Value
+	} else {
+		dbPassword = os.Getenv("DB_PASSWORD")
+	}
+
 	connStr := "postgresql://" + dbUsername + ":" + dbPassword + "@" + dbHost + "/" + dbName + "?sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
