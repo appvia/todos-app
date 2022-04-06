@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-ingress-to-todos-app
+spec:
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+      from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: todos-app
+  policyTypes:
+    - Ingress

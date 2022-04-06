@@ -18,8 +18,15 @@ docker run --name todos-app \
   -e DB_NAME=${POSTGRESQL_DB_NAME} \
   -e DB_USERNAME=${POSTGRESQL_DB_USERNAME} \
   -e DB_PASSWORD=${POSTGRESQL_DB_PASSWORD} \
-  -d ghcr.io/appvia/todos-app:latest@sha256:db27ed795c13856f9f779f76c469f561385dd4419399fe48f8acd09f6f199ab8
+  -d ghcr.io/appvia/todos-app:sha-777555b550e290fa7c6be050957b6e906492bad4
 ```
 
-<!-- ## Run the Docker container in a Kubernetes cluster
-TBD -->
+### Run the container in a Kubernetes cluster
+```bash
+NAMESPACE=""
+
+helm upgrade todos-app charts/todos-app/ \
+  --install \
+  --namespace ${NAMESPACE} \
+  --wait
+```
